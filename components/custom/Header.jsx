@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Button } from '../ui/button';
 import colors from '@/data/colors';
 import { UserDetailContext } from '@/context/UserDetailContext';
@@ -8,13 +8,23 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { LucideDownload, Rocket } from 'lucide-react';
 import { ActionContext } from '@/context/ActionContext';
+import SignInDialog from './SignInDialog';
 
 function Header(){
+    const [openDialog, setOpenDialog] = useState(false);
     const {userDetail, setUserDetail}=useContext(UserDetailContext);
     // const {toggleSideBar}=useSidebar();
     const {action, setAction} = useContext(ActionContext);
     const path=usePathname();
     console.log(path?.includes('workspace'))
+
+    const Clicking = ()=>{
+        if(!userDetail?.name){
+            setOpenDialog(true);
+            return;
+        }
+    
+    }
 
     const onActionBtn=(action)=>{
         setAction({
@@ -29,10 +39,12 @@ function Header(){
             <Image src={'/logo.svg'} alt="Logo" width={150} height={150} />
             </Link>
             {!userDetail?.name ? <div className='flex gap-5'>
-                <Button variant='ghost'>Sign in</Button>
+                <Button onClick={()=>Clicking()}
+                    variant='ghost'>Sign in</Button>
                 <Button className='text-white' style={{
                     backgroundColor: colors.BLUE
                 }}>Get Started</Button>
+                <SignInDialog openDialog={openDialog} closeDialog={(v) => setOpenDialog(v)} />
             </div>:
             path?.includes('workspace')&&<div className='flex gap-2 items-center'>
                 <Button variant='ghost' onClick={()=>onActionBtn('export')}><LucideDownload/>Export</Button>

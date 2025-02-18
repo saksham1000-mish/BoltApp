@@ -3,7 +3,7 @@ import { mutation, query } from "./_generated/server";
 
 export const CreateWorkspace=mutation({
     args:{
-        messages:v.any(),
+        messages:v.array(v.any()),
         user:v.id('users')
     },
     handler:async(ctx,args)=>{
@@ -28,7 +28,7 @@ export const GetWorkspace=query({
 export const UpdateMessages=mutation({
     args:{
         workspaceId:v.id('workspace'),
-        messages:v.any()
+        messages:v.array(v.any())
     },
     handler:async(ctx,args)=>{
         const result=await ctx.db.patch(args.workspaceId,{

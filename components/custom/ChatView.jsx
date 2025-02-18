@@ -18,7 +18,7 @@ function ChatView(){
     const{id}=useParams();
     const convex=useConvex();
     const {userDetail,setUserDetail}=useContext(UserDetailContext);
-    const {messages,setMessages}=useContext(MessagesContext);
+    const {messages=[],setMessages}=useContext(MessagesContext);
     const [userInput,setUserInput]=useState()
     const [loading, setLoading]=useState(false);
     const UpdateMessages=useMutation(api.workspace.UpdateMessages)
@@ -33,12 +33,16 @@ function ChatView(){
         const result=await convex.query(api.workspace.GetWorkspace,{
             workspaceId:id
         });
-        setMessages(result?.messages)
-        console.log(result);
+        setMessages(Array.isArray(result?.messages) ? result.messages : [])
+        console.log("API Result:", result);
+        console.log(Array.isArray(result?.messages));
+        console.log("Type of messages:", typeof result.messages);
+        console.log("messages:", result?.messages);
+
     }
 
     useEffect(()=>{
-        if(messages?.length>0){
+        if(messages?.length>=0){
             const role=messages[messages?.length-1]?.role;
             if(role=='user'){
                 GetAiResponse();
@@ -57,10 +61,10 @@ function ChatView(){
             role:'ai',
             content:result.data.result
         }
-        setMessages(prev=>[...prev,aiResp])
+        setMessages(prev=>[...(prev || []),aiResp])
 
         await UpdateMessages({
-            messages:[...messages,aiResp],
+            messages: [...(Array.isArray(messages) ? messages : Object.values(messages ?? {})), aiResp],
             workspaceId:id
         })
         setLoading(false);

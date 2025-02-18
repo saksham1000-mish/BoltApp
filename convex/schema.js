@@ -9,7 +9,7 @@ export default defineSchema({
         uid:v.string(),
     }),
     workspace:defineTable({
-        messages:v.any(),
+        messages:v.array(v.any()),
         fileData:v.optional(v.any()),
         user:v.id('users')
     })
